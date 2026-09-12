@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Học Từ Vựng HSK 3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+        .transition-transform {
+            transition: transform 0.6s;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans text-gray-800 flex flex-col items-center justify-center p-4">
+
+    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col h-[600px]">
+        
+        <!-- Header -->
+        <div class="bg-red-600 text-white p-4 text-center relative">
+            <h1 class="text-2xl font-bold">Từ Vựng HSK 3 (Bài 1 - 19)</h1>
+            <p class="text-sm opacity-80 mt-1">Nguồn: HOCBÁ</p>
+            <div class="absolute top-4 right-4">
+                 <select id="lessonSelect" class="bg-red-700 text-white border border-red-500 rounded p-1 text-sm outline-none">
+                    <option value="all">Tất cả bài</option>
+                    <option value="1">Bài 1</option>
+                    <option value="2">Bài 2</option>
+                    <option value="3">Bài 3</option>
+                    <option value="4">Bài 4</option>
+                    <option value="5">Bài 5</option>
+                    <option value="6">Bài 6</option>
+                    <option value="7">Bài 7</option>
+                    <option value="8">Bài 8</option>
+                    <option value="9">Bài 9</option>
+                    <option value="10">Bài 10</option>
+                    <option value="11">Bài 11</option>
+                    <option value="12">Bài 12</option>
+                    <option value="13">Bài 13</option>
+                    <option value="14">Bài 14</option>
+                    <option value="15">Bài 15</option>
+                    <option value="16">Bài 16</option>
+                    <option value="17">Bài 17</option>
+                    <option value="18">Bài 18</option>
+                    <option value="19">Bài 19</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="w-full bg-gray-200 h-1.5">
+            <div id="progressBar" class="bg-red-500 h-1.5 transition-all duration-300 w-0"></div>
+        </div>
+
+        <!-- Flashcard Area -->
+        <div class="flex-grow flex items-center justify-center p-6 relative w-full perspective-1000">
+            
+            <div id="flashcard" class="w-full max-w-md h-64 relative transform-style-3d transition-transform cursor-pointer shadow-lg rounded-xl">
+                
+                <!-- Front (Chinese & Pinyin) -->
+                <div class="absolute w-full h-full bg-white border-2 border-gray-100 rounded-xl flex flex-col items-center justify-center p-6 backface-hidden shadow-[0_4px_14px_0_rgba(0,0,0,0.1)]">
+                    <div id="cardFrontText" class="text-6xl font-bold text-gray-800 mb-4 text-center">字</div>
+                    <div id="cardPinyinText" class="text-xl text-gray-500 text-center">zì</div>
+                    <div class="absolute bottom-4 text-xs text-gray-400">Chạm để lật</div>
+                </div>
+
+                <!-- Back (Vietnamese) -->
+                <div class="absolute w-full h-full bg-red-50 text-red-900 border-2 border-red-100 rounded-xl flex flex-col items-center justify-center p-6 backface-hidden rotate-y-180 shadow-[0_4px_14px_0_rgba(0,0,0,0.1)]">
+                    <div id="cardBackText" class="text-3xl font-semibold text-center leading-tight">Nghĩa tiếng Việt</div>
+                    <div id="cardLessonInfo" class="absolute top-4 left-4 text-xs font-semibold bg-red-200 text-red-800 px-2 py-1 rounded-md">Bài X</div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Controls -->
+        <div class="p-4 border-t border-gray-100 flex justify-between items-center bg-gray-50">
+            <button id="prevBtn" class="px-6 py-2.5 rounded-full bg-white text-gray-700 font-semibold shadow-sm hover:bg-gray-50 border border-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                &larr; Trước
+            </button>
+            
+            <div class="text-sm font-medium text-gray-500">
+                <span id="currentIndexDisplay">1</span> / <span id="totalCardsDisplay">100</span>
+            </div>
+
+            <button id="nextBtn" class="px-6 py-2.5 rounded-full bg-red-600 text-white font-semibold shadow-md hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                Tiếp &rarr;
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Data extracted from the provided PDF
+        const rawVocabData = [
+            { chinese: "周末", pinyin: "zhōumò", vietnamese: "cuối tuần", lesson: 1 },
+            { chinese: "打算", pinyin: "dăsuān", vietnamese: "(n):kế hoạch, (v): dự định", lesson: 1 },
+            { chinese: "跟", pinyin: "gen", vietnamese: "cùng, với", lesson: 1 },
+            { chinese: "和", pinyin: "hé", vietnamese: "và", lesson: 1 },
+            { chinese: "一直", pinyin: "yī zhí", vietnamese: "mọi lúc", lesson: 1 },
+            { chinese: "游戏", pinyin: "yóu xì", vietnamese: "trò chơi", lesson: 1 },
+            { chinese: "作业", pinyin: "zuò yè", vietnamese: "bài tập", lesson: 1 },
+            { chinese: "着急", pinyin: "zháo jí", vietnamese: "lo lắng, nóng lòng, lo âu", lesson: 1 },
+            { chinese: "复习", pinyin: "fù xí", vietnamese: "ôn tập", lesson: 1 },
+            { chinese: "练习", pinyin: "liàn xi", vietnamese: "luyện tập", lesson: 1 },
+            { chinese: "南方 - 北方 - 东方 - 西方", pinyin: "", vietnamese: "phương nam - phương bắc - phương đông - phương tây", lesson: 1 },
+            { chinese: "面包", pinyin: "miàn bão", vietnamese: "bánh mì", lesson: 1 },
+            { chinese: "带", pinyin: "dài", vietnamese: "mang, đội", lesson: 1 },
+            { chinese: "地图", pinyin: "dì tú", vietnamese: "cái bản đồ (lượng từ là 张)", lesson: 1 },
+            { chinese: "搬", pinyin: "bān", vietnamese: "dời, chuyển", lesson: 1 },
+            { chinese: "厉害", pinyin: "lì hăi", vietnamese: "lợi hại", lesson: 1 },
+            { chinese: "英雄", pinyin: "yīng xióng", vietnamese: "anh hùng", lesson: 1 },
+            { chinese: "比喻", pinyin: "bì yù", vietnamese: "ẩn dụ", lesson: 1 },
+            { chinese: "积累", pinyin: "jì lèi", vietnamese: "tích lũy", lesson: 1 },
+            { chinese: "精神", pinyin: "jīng shén", vietnamese: "tinh thần", lesson: 1 },
+            { chinese: "遇到", pinyin: "yù dào", vietnamese: "gặp phải", lesson: 1 },
+            { chinese: "困难", pinyin: "kūn nán", vietnamese: "khó khăn", lesson: 1 },
+            { chinese: "办法", pinyin: "bàn fă", vietnamese: "cách, phương pháp", lesson: 1 },
+            { chinese: "克服", pinyin: "kè fú", vietnamese: "khắc phục", lesson: 1 },
+            { chinese: "解决", pinyin: "jiě jué", vietnamese: "giải quyết", lesson: 1 },
+
+            { chinese: "腿", pinyin: "tui", vietnamese: "chân", lesson: 2 },
+            { chinese: "疼", pinyin: "téng", vietnamese: "đau", lesson: 2 },
+            { chinese: "脚", pinyin: "jião", vietnamese: "ngón chân", lesson: 2 },
+            { chinese: "树", pinyin: "shủ", vietnamese: "cái cây", lesson: 2 },
+            { chinese: "容易", pinyin: "róng yī", vietnamese: "dễ dàng", lesson: 2 },
+            { chinese: "难", pinyin: "nán", vietnamese: "khó", lesson: 2 },
+            { chinese: "作业", pinyin: "zuò yè", vietnamese: "bài tập", lesson: 2 },
+            { chinese: "太太", pinyin: "tài tai", vietnamese: "madam, bà", lesson: 2 },
+            { chinese: "秘书", pinyin: "mì shū", vietnamese: "thư ký", lesson: 2 },
+            { chinese: "经理", pinyin: "jīng li", vietnamese: "quản lý", lesson: 2 },
+            { chinese: "办公室", pinyin: "bàn gōng sĩ", vietnamese: "văn phòng", lesson: 2 },
+            { chinese: "辆", pinyin: "liàng", vietnamese: "lượng từ của xe", lesson: 2 },
+            { chinese: "楼", pinyin: "lóu", vietnamese: "lầu", lesson: 2 },
+            { chinese: "拿", pinyin: "ná", vietnamese: "cầm, nắm", lesson: 2 },
+            { chinese: "把", pinyin: "bă", vietnamese: "đem, (có ngữ pháp riêng)", lesson: 2 },
+            { chinese: "伞", pinyin: "săn", vietnamese: "cái dù", lesson: 2 },
+            { chinese: "胖", pinyin: "pàng", vietnamese: "mập", lesson: 2 },
+            { chinese: "瘦", pinyin: "shōu", vietnamese: "ốm", lesson: 2 },
+            { chinese: "其实", pinyin: "qí shí", vietnamese: "thực tế", lesson: 2 },
+            { chinese: "其实上", pinyin: "", vietnamese: "trên thực tế", lesson: 2 },
+            { chinese: "健康", pinyin: "jiàn kàng", vietnamese: "khỏe mạnh", lesson: 2 },
+
+            { chinese: "还是", pinyin: "hái shì", vietnamese: "hay là (chỉ dùng trong câu hỏi)", lesson: 3 },
+            { chinese: "爬山", pinyin: "pá shān", vietnamese: "leo núi", lesson: 3 },
+            { chinese: "小心", pinyin: "xiǎo xīn", vietnamese: "cẩn thận", lesson: 3 },
+            { chinese: "条", pinyin: "tiáo", vietnamese: "lượng từ của những cái gì dài dài", lesson: 3 },
+            { chinese: "裤子", pinyin: "kūzi", vietnamese: "cái quần", lesson: 3 },
+            { chinese: "记得", pinyin: "jì de", vietnamese: "nhớ", lesson: 3 },
+            { chinese: "衬衫", pinyin: "chèn shān", vietnamese: "áo sơ mi", lesson: 3 },
+            { chinese: "元", pinyin: "yuán", vietnamese: "đơn vị tiền", lesson: 3 },
+            { chinese: "新鲜", pinyin: "xīn xiān", vietnamese: "tươi, tươi mới", lesson: 3 },
+            { chinese: "甜", pinyin: "tián", vietnamese: "ngọt", lesson: 3 },
+            { chinese: "只", pinyin: "zhi", vietnamese: "chỉ", lesson: 3 },
+            { chinese: "放", pinyin: "fàng", vietnamese: "đặt, để", lesson: 3 },
+            { chinese: "放下", pinyin: "", vietnamese: "đặtxuống, đểxuống", lesson: 3 },
+            { chinese: "饮料", pinyin: "yin liào", vietnamese: "thức uống", lesson: 3 },
+            { chinese: "或者", pinyin: "huò zhě", vietnamese: "hoặc, hay là (chỉ dùng trong câu trần thuật)", lesson: 3 },
+            { chinese: "舒服", pinyin: "shū fu", vietnamese: "thoải mái", lesson: 3 },
+            { chinese: "花", pinyin: "hua", vietnamese: "bông hoa", lesson: 3 },
+            { chinese: "绿", pinyin: "lŭ", vietnamese: "màu xanh lá cây", lesson: 3 },
+            { chinese: "顾客", pinyin: "gū kè", vietnamese: "khách hàng", lesson: 3 },
+
+            { chinese: "比赛", pinyin: "bi sài", vietnamese: "cuộc thi", lesson: 4 },
+            { chinese: "照片", pinyin: "zhào piàn", vietnamese: "tấm ảnh (Lượng từ là 张)", lesson: 4 },
+            { chinese: "年级", pinyin: "nián jí", vietnamese: "lớp", lesson: 4 },
+            { chinese: "又", pinyin: "you", vietnamese: "lại", lesson: 4 },
+            { chinese: "聪明", pinyin: "cōng míng", vietnamese: "thông minh", lesson: 4 },
+            { chinese: "热情", pinyin: "rè qing", vietnamese: "nhiệt tình", lesson: 4 },
+            { chinese: "努力", pinyin: "nŭ lì", vietnamese: "nỗ lực, cố gắng", lesson: 4 },
+            { chinese: "总是", pinyin: "zǒng shì", vietnamese: "luôn luôn", lesson: 4 },
+            { chinese: "回答", pinyin: "huí dá", vietnamese: "trả lời", lesson: 4 },
+            { chinese: "站", pinyin: "zhàn", vietnamese: "đứng", lesson: 4 },
+            { chinese: "站起来", pinyin: "", vietnamese: "đứng lên", lesson: 4 },
+            { chinese: "饿", pinyin: "è", vietnamese: "đói", lesson: 4 },
+            { chinese: "超市", pinyin: "chão shì", vietnamese: "siêu thị", lesson: 4 },
+            { chinese: "蛋糕", pinyin: "dàngão", vietnamese: "bánh kem", lesson: 4 },
+            { chinese: "年轻", pinyin: "nián qīng", vietnamese: "trẻ", lesson: 4 },
+            { chinese: "认真", pinyin: "rèn zhēn", vietnamese: "nghiêm túc", lesson: 4 },
+            { chinese: "客人", pinyin: "kè rén", vietnamese: "người khách, khách hàng", lesson: 4 },
+            { chinese: "古代", pinyin: "gũ dài", vietnamese: "cổ đại", lesson: 4 },
+            { chinese: "故事", pinyin: "gù shī", vietnamese: "câu chuyện", lesson: 4 },
+
+            { chinese: "发烧", pinyin: "fashão", vietnamese: "phát sốt", lesson: 5 },
+            { chinese: "为", pinyin: "wèi", vietnamese: "bởi, bởi vì", lesson: 5 },
+            { chinese: "照顾", pinyin: "zhào gù", vietnamese: "chăm sóc", lesson: 5 },
+            { chinese: "用", pinyin: "yòng", vietnamese: "cần, dùng", lesson: 5 },
+            { chinese: "感冒", pinyin: "găn mão", vietnamese: "cảm", lesson: 5 },
+            { chinese: "季节", pinyin: "jì jié", vietnamese: "mùa", lesson: 5 },
+            { chinese: "当然", pinyin: "dāng rán", vietnamese: "đương nhiên", lesson: 5 },
+            { chinese: "春天 - 夏天 - 秋天 - 冬天", pinyin: "chūn tiān - xià tiān - qiū tiān - dōng tiān", vietnamese: "xuân - hạ - thu - đông", lesson: 5 },
+            { chinese: "草", pinyin: "cão", vietnamese: "cỏ", lesson: 5 },
+            { chinese: "裙子", pinyin: "qún zi", vietnamese: "cái váy", lesson: 5 },
+            { chinese: "最近", pinyin: "zuì jìn", vietnamese: "dạo gần đây", lesson: 5 },
+            { chinese: "越", pinyin: "yuè", vietnamese: "càng", lesson: 5 },
+            { chinese: "马上", pinyin: "măshàng", vietnamese: "ngay lập tức", lesson: 5 },
+            { chinese: "形容", pinyin: "xíngróng", vietnamese: "miêu tả", lesson: 5 },
+            { chinese: "医术", pinyin: "yī shù", vietnamese: "kỹ thuật y học", lesson: 5 },
+
+            { chinese: "眼睛", pinyin: "yǎn jīng", vietnamese: "mắt", lesson: 6 },
+            { chinese: "眼镜", pinyin: "yǎn jìng", vietnamese: "kính", lesson: 6 },
+            { chinese: "突然", pinyin: "tū rán", vietnamese: "đột nhiên", lesson: 6 },
+            { chinese: "离开", pinyin: "lí kāi", vietnamese: "rời xa", lesson: 6 },
+            { chinese: "清楚", pinyin: "qīng chu", vietnamese: "rõ", lesson: 6 },
+            { chinese: "刚才", pinyin: "gāng cái", vietnamese: "vừa mới", lesson: 6 },
+            { chinese: "帮忙", pinyin: "bāng máng", vietnamese: "giúp đỡ", lesson: 6 },
+            { chinese: "特别", pinyin: "tè bié", vietnamese: "đặc biệt", lesson: 6 },
+            { chinese: "讲", pinyin: "jiăng", vietnamese: "giảng, kể", lesson: 6 },
+            { chinese: "明白", pinyin: "ming bai", vietnamese: "hiểu", lesson: 6 },
+            { chinese: "锻炼", pinyin: "duàn liàn", vietnamese: "rèn luyện", lesson: 6 },
+            { chinese: "音乐", pinyin: "yīn yuè", vietnamese: "âm nhạc", lesson: 6 },
+            { chinese: "公园", pinyin: "gōng yuăn", vietnamese: "công viên", lesson: 6 },
+            { chinese: "聊天(儿)", pinyin: "liáo tiān (er)", vietnamese: "nói chuyện, tám chuyện", lesson: 6 },
+            { chinese: "睡着", pinyin: "shuì zháo", vietnamese: "ngủ say, ngủ thiếp đi", lesson: 6 },
+            { chinese: "更", pinyin: "gēng", vietnamese: "hơn", lesson: 6 },
+            { chinese: "正常", pinyin: "zhēng cháng", vietnamese: "bình thường", lesson: 6 },
+            { chinese: "因此", pinyin: "yīn cĩ", vietnamese: "do đó", lesson: 6 },
+            { chinese: "放弃", pinyin: "fang qì", vietnamese: "bỏ cuộc", lesson: 6 },
+            { chinese: "而", pinyin: "èr", vietnamese: "mà", lesson: 6 },
+            { chinese: "坚持", pinyin: "jiān chí", vietnamese: "kiên trì", lesson: 6 },
+
+            { chinese: "同事", pinyin: "tóng shi", vietnamese: "đồng nghiệp", lesson: 7 },
+            { chinese: "以前", pinyin: "yi qián", vietnamese: "trước đây", lesson: 7 },
+            { chinese: "银行", pinyin: "yín háng", vietnamese: "ngân hàng", lesson: 7 },
+            { chinese: "久", pinyin: "jiŭ", vietnamese: "lâu", lesson: 7 },
+            { chinese: "感兴趣", pinyin: "găn xìngqù", vietnamese: "hứng thú", lesson: 7 },
+            { chinese: "结婚", pinyin: "jié hūn", vietnamese: "kết hôn", lesson: 7 },
+            { chinese: "欢迎", pinyin: "huān yíng", vietnamese: "hoan nghênh", lesson: 7 },
+            { chinese: "迟到", pinyin: "chí dào", vietnamese: "đến muộn", lesson: 7 },
+            { chinese: "半", pinyin: "bàn", vietnamese: "một nửa", lesson: 7 },
+            { chinese: "接", pinyin: "jiē", vietnamese: "gặp (ai đó), đón (ai đó)", lesson: 7 },
+            { chinese: "刻", pinyin: "kè", vietnamese: "khắc", lesson: 7 },
+            { chinese: "差", pinyin: "chà", vietnamese: "kém", lesson: 7 },
+            
+            { chinese: "满", pinyin: "măn", vietnamese: "đầy (thêm dựa trên ngự cảnh 满意)", lesson: 8 },
+            { chinese: "满意", pinyin: "măn yì", vietnamese: "hài lòng", lesson: 8 },
+            { chinese: "电梯", pinyin: "diàn tī", vietnamese: "thang máy", lesson: 8 },
+            { chinese: "害怕", pinyin: "hài pà", vietnamese: "sợ hãi", lesson: 8 },
+            { chinese: "熊猫", pinyin: "xióng mão", vietnamese: "gấu trúc", lesson: 8 },
+            { chinese: "见面", pinyin: "jiàn miàn", vietnamese: "gặp mặt (động từ ly hợp)", lesson: 8 },
+            { chinese: "安静", pinyin: "ān jìng", vietnamese: "yên tĩnh", lesson: 8 },
+            { chinese: "可乐", pinyin: "kè lè", vietnamese: "coca cola", lesson: 8 },
+            { chinese: "一会儿", pinyin: "yī huir", vietnamese: "một lát", lesson: 8 },
+            { chinese: "马上", pinyin: "mă shàng", vietnamese: "ngay lập tức", lesson: 8 },
+            { chinese: "洗手间", pinyin: "xǐ shòu jiān", vietnamese: "phòng tắm, nhà vệ sinh", lesson: 8 },
+            { chinese: "老", pinyin: "lão", vietnamese: "già, cỗ", lesson: 8 },
+            { chinese: "几乎", pinyin: "jihui", vietnamese: "gần như", lesson: 8 },
+            { chinese: "变化", pinyin: "biàn huà", vietnamese: "thay đổi biểnhóa", lesson: 8 },
+            { chinese: "健康", pinyin: "jiàn kàng", vietnamese: "khỏe mạnh", lesson: 8 },
+            { chinese: "重要", pinyin: "zhòng yào", vietnamese: "quan trọng", lesson: 8 },
+            { chinese: "全面", pinyin: "quán miàn", vietnamese: "toàn diện", lesson: 8 },
+
+            { chinese: "中文", pinyin: "zhōng wén", vietnamese: "tiếng trung", lesson: 9 },
+            { chinese: "班", pinyin: "bān", vietnamese: "lớp", lesson: 9 },
+            { chinese: "一样", pinyin: "yí yàng", vietnamese: "giống, như", lesson: 9 },
+            { chinese: "最后", pinyin: "zui hòu", vietnamese: "cuối cùng", lesson: 9 },
+            { chinese: "放心", pinyin: "fàng xĩn", vietnamese: "yên tâm", lesson: 9 },
+            { chinese: "一定", pinyin: "yí dìng", vietnamese: "nhất định", lesson: 9 },
+            { chinese: "但心", pinyin: "dān xīn", vietnamese: "lo lắng (sửa từ PDF)", lesson: 9 },
+            { chinese: "比较", pinyin: "bī jiào", vietnamese: "tương đối", lesson: 9 },
+            { chinese: "了解", pinyin: "liǎo jiě", vietnamese: "hiểu biết", lesson: 9 },
+            { chinese: "先", pinyin: "xiān", vietnamese: "trước", lesson: 9 },
+            { chinese: "中间", pinyin: "zhōng jiān", vietnamese: "trung gian, ở giữa", lesson: 9 },
+            { chinese: "参加", pinyin: "cān jiā", vietnamese: "tham gia", lesson: 9 },
+            { chinese: "影响", pinyin: "ying xiăng", vietnamese: "ảnh hưởng", lesson: 9 },
+            { chinese: "优点", pinyin: "yōu diǎn", vietnamese: "ưu điểm", lesson: 9 },
+
+            { chinese: "个子", pinyin: "gè zi", vietnamese: "vóc dáng, chiều cao", lesson: 10 },
+            { chinese: "矮", pinyin: "ai", vietnamese: "lùn, thấp", lesson: 10 },
+            { chinese: "历史", pinyin: "lì shi", vietnamese: "lịch sử", lesson: 10 },
+            { chinese: "体育", pinyin: "tiyù", vietnamese: "thể dục, thể thao", lesson: 10 },
+            { chinese: "数学", pinyin: "shù xué", vietnamese: "toán học", lesson: 10 },
+            { chinese: "方便", pinyin: "fàng biàn", vietnamese: "thuận tiện", lesson: 10 },
+            { chinese: "自行车", pinyin: "zì xíng chẽ", vietnamese: "xe đạp", lesson: 10 },
+            { chinese: "骑", pinyin: "qi", vietnamese: "cưỡi", lesson: 10 },
+            { chinese: "旧", pinyin: "jiù", vietnamese: "cũ, đã qua sử dụng", lesson: 10 },
+            { chinese: "换", pinyin: "huàn", vietnamese: "đổi", lesson: 10 },
+            { chinese: "地方", pinyin: "di fang", vietnamese: "nơi, vùng", lesson: 10 },
+            { chinese: "中介", pinyin: "zhōng jiè", vietnamese: "môi giới, trung gian", lesson: 10 },
+            { chinese: "主要", pinyin: "zhù yào", vietnamese: "chủ yếu", lesson: 10 },
+            { chinese: "环境", pinyin: "huán jìng", vietnamese: "môi trường", lesson: 10 },
+            { chinese: "附近", pinyin: "fù jìn", vietnamese: "gần đây", lesson: 10 },
+            
+            { chinese: "图书管", pinyin: "tú shū guăn", vietnamese: "thư viện (sửa từ 图书馆)", lesson: 11 },
+            { chinese: "借", pinyin: "jiē", vietnamese: "mượn", lesson: 11 },
+            { chinese: "词典", pinyin: "cí diǎn", vietnamese: "từ điển", lesson: 11 },
+            { chinese: "还", pinyin: "huán", vietnamese: "trả", lesson: 11 },
+            { chinese: "灯", pinyin: "dēng", vietnamese: "đèn", lesson: 11 },
+            { chinese: "会议", pinyin: "huì yì", vietnamese: "cuộc họp", lesson: 11 },
+            { chinese: "结束", pinyin: "jié shù", vietnamese: "kết thúc", lesson: 11 },
+            { chinese: "忘记", pinyin: "wàng jì", vietnamese: "quên", lesson: 11 },
+            { chinese: "空调", pinyin: "kōng tiáo", vietnamese: "máy lạnh", lesson: 11 },
+            { chinese: "关", pinyin: "guān", vietnamese: "đóng, tắt", lesson: 11 },
+            { chinese: "地铁", pinyin: "dì tiě", vietnamese: "tàu điện ngầm", lesson: 11 },
+            { chinese: "双", pinyin: "shuāng", vietnamese: "lượng từ của những cái gì có đôi", lesson: 11 },
+            { chinese: "筷子", pinyin: "kuài zi", vietnamese: "đôi đũa", lesson: 11 },
+            { chinese: "口", pinyin: "kou", vietnamese: "khẩu, miệng", lesson: 11 },
+            { chinese: "瓶子", pinyin: "ping zi", vietnamese: "cái chai", lesson: 11 },
+            { chinese: "笔记本", pinyin: "bijì běn", vietnamese: "laptop, vở", lesson: 11 },
+            { chinese: "电子邮件", pinyin: "diànzi yóujiàn", vietnamese: "thư điện tử, email", lesson: 11 },
+            { chinese: "习惯", pinyin: "xí guān", vietnamese: "(n) thói quen, (v) quen thuộc", lesson: 11 },
+
+            { chinese: "太阳", pinyin: "tài yáng", vietnamese: "mặt trời", lesson: 12 },
+            { chinese: "西", pinyin: "xi", vietnamese: "tây", lesson: 12 },
+            { chinese: "生气", pinyin: "shēng qì", vietnamese: "tức giận", lesson: 12 },
+            { chinese: "行李箱", pinyin: "xíng li xiāng", vietnamese: "hành lí", lesson: 12 },
+            { chinese: "自己", pinyin: "zì jì", vietnamese: "bản thân, mình", lesson: 12 },
+            { chinese: "包", pinyin: "bão", vietnamese: "cái túi", lesson: 12 },
+            { chinese: "发现", pinyin: "fã xiàn", vietnamese: "phát hiện", lesson: 12 },
+            { chinese: "护照", pinyin: "hù zhào", vietnamese: "hộ chiếu", lesson: 12 },
+            { chinese: "起飞", pinyin: "qi fei", vietnamese: "cất cánh", lesson: 12 },
+            { chinese: "司机", pinyin: "sī ji", vietnamese: "tàixế", lesson: 12 },
+            { chinese: "教", pinyin: "jiào", vietnamese: "dạy", lesson: 12 },
+            { chinese: "画", pinyin: "huà", vietnamese: "(v) vẽ, (n) bức vẽ", lesson: 12 },
+            { chinese: "需要", pinyin: "xū yào", vietnamese: "cần", lesson: 12 },
+            { chinese: "黑板", pinyin: "hēi băn", vietnamese: "bản đen", lesson: 12 },
+
+            { chinese: "终于", pinyin: "zhōng yú", vietnamese: "cuối cùng", lesson: 13 },
+            { chinese: "爷爷", pinyin: "yè ye", vietnamese: "ông nội", lesson: 13 },
+            { chinese: "礼物", pinyin: "lī wù", vietnamese: "món quà", lesson: 13 },
+            { chinese: "奶奶", pinyin: "năi năi", vietnamese: "bà nội", lesson: 13 },
+            { chinese: "遇到", pinyin: "yù dào", vietnamese: "gặp phải, va phải", lesson: 13 },
+            { chinese: "一边。。。一边。。。", pinyin: "yì biān... yì biān...", vietnamese: "vừa làm cái gì đó vừa làm cái gì đó", lesson: 13 },
+            { chinese: "过去", pinyin: "guò qù", vietnamese: "qua đi, đi qua", lesson: 13 },
+            { chinese: "一般", pinyin: "yì bān", vietnamese: "phổ biến, thông thường", lesson: 13 },
+            { chinese: "愿意", pinyin: "yuàn yi", vietnamese: "đồng ý, muốn", lesson: 13 },
+            { chinese: "起来", pinyin: "qi lai", vietnamese: "bật lên, tăng lên", lesson: 13 },
+            { chinese: "应该", pinyin: "yīng gãi", vietnamese: "nên", lesson: 13 },
+            { chinese: "生活", pinyin: "shēng huó", vietnamese: "cuộc sống", lesson: 13 },
+            { chinese: "校长", pinyin: "xiào zhăng", vietnamese: "hiệu trưởng", lesson: 13 },
+            { chinese: "坏", pinyin: "huài", vietnamese: "hư, vỡ, hỏng", lesson: 13 },
+            { chinese: "经常", pinyin: "jīng cháng", vietnamese: "thường xuyên", lesson: 13 },
+
+            { chinese: "打扫", pinyin: "dă são", vietnamese: "dọn dẹp", lesson: 14 },
+            { chinese: "干净", pinyin: "gān jìng", vietnamese: "sạch sẽ", lesson: 14 },
+            { chinese: "然后", pinyin: "rán hòu", vietnamese: "sau đó", lesson: 14 },
+            { chinese: "冰箱", pinyin: "bīng xiāng", vietnamese: "tủ lạnh", lesson: 14 },
+            { chinese: "洗澡", pinyin: "xi zão", vietnamese: "tắm", lesson: 14 },
+            { chinese: "节目", pinyin: "jié mù", vietnamese: "chương trình", lesson: 14 },
+            { chinese: "月亮", pinyin: "yuè liang", vietnamese: "ánh trăng", lesson: 14 },
+            { chinese: "像", pinyin: "xiàng", vietnamese: "giống", lesson: 14 },
+            { chinese: "盘子", pinyin: "pán zi", vietnamese: "cái dĩa/ đĩa", lesson: 14 },
+            { chinese: "阿姨", pinyin: "ā yi", vietnamese: "cô, dì", lesson: 14 },
+            { chinese: "声音", pinyin: "shēng yīn", vietnamese: "âm thanh, tiếng động", lesson: 14 },
+            { chinese: "菜单", pinyin: "cài dân", vietnamese: "thực đơn", lesson: 14 },
+            { chinese: "简单", pinyin: "jiǎn dẫn", vietnamese: "đơn giản", lesson: 14 },
+            { chinese: "香蕉", pinyin: "xiāng jiāo", vietnamese: "quả chuối", lesson: 14 },
+            { chinese: "限", pinyin: "xiàn", vietnamese: "giới hạn", lesson: 14 },
+            { chinese: "及早", pinyin: "ji zão", vietnamese: "sớm, nhanh chóng", lesson: 14 },
+
+            { chinese: "留学", pinyin: "liú xué", vietnamese: "du học sinh", lesson: 15 },
+            { chinese: "水平", pinyin: "shui píng", vietnamese: "trình độ", lesson: 15 },
+            { chinese: "提高", pinyin: "tí gão", vietnamese: "nâng cao", lesson: 15 },
+            { chinese: "练习", pinyin: "liàn xí", vietnamese: "luyện tập", lesson: 15 },
+            { chinese: "完成", pinyin: "wán chéng", vietnamese: "hoàn toàn", lesson: 15 },
+            { chinese: "句子", pinyin: "jù zi", vietnamese: "câu từ", lesson: 15 },
+            { chinese: "其他", pinyin: "qí tā", vietnamese: "phần còn lại", lesson: 15 },
+            { chinese: "发", pinyin: "fa", vietnamese: "gửi", lesson: 15 },
+            { chinese: "要求", pinyin: "yão qiú", vietnamese: "yêu cầu", lesson: 15 },
+            { chinese: "注意", pinyin: "zhù yì", vietnamese: "chú ý", lesson: 15 },
+            { chinese: "上网", pinyin: "shàng wăng", vietnamese: "lên mạng", lesson: 15 },
+            { chinese: "网上", pinyin: "wăng shàng", vietnamese: "trên mạng", lesson: 15 },
+            { chinese: "除了", pinyin: "chú le", vietnamese: "ngoài ra", lesson: 15 },
+            { chinese: "华", pinyin: "hua", vietnamese: "tiêu, sài, chitra", lesson: 15 },
+            { chinese: "极(了)", pinyin: "jí", vietnamese: "cực", lesson: 15 },
+            { chinese: "节日", pinyin: "jié rì", vietnamese: "ngày lễ, lễ hội", lesson: 15 },
+            { chinese: "举行", pinyin: "jù xíng", vietnamese: "giữ", lesson: 15 },
+            { chinese: "世界", pinyin: "shì jié", vietnamese: "thế giới", lesson: 15 },
+            { chinese: "街道", pinyin: "jiē dào", vietnamese: "conđường", lesson: 15 },
+            { chinese: "各", pinyin: "gè", vietnamese: "mỗi", lesson: 15 },
+            { chinese: "文化", pinyin: "wén hua", vietnamese: "vănhóa", lesson: 15 },
+            { chinese: "面貌", pinyin: "miàn mão", vietnamese: "tướngmạo, bộ mặt, trạng thái, tình hình", lesson: 15 },
+            { chinese: "诚实", pinyin: "chéng shí", vietnamese: "trung thực", lesson: 15 },
+            { chinese: "任何", pinyin: "rèn hé", vietnamese: "bất kỳ", lesson: 15 },
+
+            { chinese: "城市", pinyin: "chéng shì", vietnamese: "thành phố", lesson: 16 },
+            { chinese: "如果", pinyin: "rú guo", vietnamese: "nếu", lesson: 16 },
+            { chinese: "认为", pinyin: "rèn wéi", vietnamese: "cho rằng, tin rằng, nghĩ", lesson: 16 },
+            { chinese: "皮鞋", pinyin: "pí xié", vietnamese: "giày da (lượng từ là 双)", lesson: 16 },
+            { chinese: "帽子", pinyin: "mào zi", vietnamese: "cái mũ", lesson: 16 },
+            { chinese: "长", pinyin: "zhăng", vietnamese: "lớn lên, phát triển lên", lesson: 16 },
+            { chinese: "可爱", pinyin: "kě ài", vietnamese: "dễ thương", lesson: 16 },
+            { chinese: "米", pinyin: "mi", vietnamese: "mét", lesson: 16 },
+            { chinese: "公斤", pinyin: "gōng jīn", vietnamese: "km (nên là kg, nhưng giữ theo PDF)", lesson: 16 },
+            { chinese: "鼻子", pinyin: "bīzi", vietnamese: "cái mũi", lesson: 16 },
+            { chinese: "头发", pinyin: "tou fa", vietnamese: "đầu tóc", lesson: 16 },
+            { chinese: "检查", pinyin: "jiăn chá", vietnamese: "kiểm tra", lesson: 16 },
+            { chinese: "刷牙", pinyin: "shua yá", vietnamese: "đánh răng", lesson: 16 },
+            { chinese: "关系", pinyin: "guān xì", vietnamese: "mối quan hệ", lesson: 16 },
+            { chinese: "别人", pinyin: "bié rén", vietnamese: "người khác", lesson: 16 },
+            { chinese: "词语", pinyin: "cí yŭ", vietnamese: "từ ngữ", lesson: 16 },
+            { chinese: "对待", pinyin: "duì dài", vietnamese: "đối đãi", lesson: 16 },
+            { chinese: "正确", pinyin: "zhèng què", vietnamese: "đúng đắn", lesson: 16 },
+            { chinese: "处处", pinyin: "chù chủ", vietnamese: "nơi nơi, mọi nơi", lesson: 16 },
+
+            { chinese: "请假", pinyin: "qing jiā", vietnamese: "xin nghĩ phép", lesson: 17 },
+            { chinese: "一共", pinyin: "yi gōng", vietnamese: "tổng cộng", lesson: 17 },
+            { chinese: "邻居", pinyin: "lín jū", vietnamese: "hàng xóm", lesson: 17 },
+            { chinese: "后来", pinyin: "hòu lái", vietnamese: "sau này", lesson: 17 },
+            { chinese: "爱好", pinyin: "ài hão", vietnamese: "sở thích", lesson: 17 },
+            { chinese: "办法", pinyin: "bàn fă", vietnamese: "cách", lesson: 17 },
+            { chinese: "为了", pinyin: "wèi le", vietnamese: "bởi vì....", lesson: 17 },
+            { chinese: "饱", pinyin: "bão", vietnamese: "no", lesson: 17 },
+            { chinese: "决定", pinyin: "jué dìng", vietnamese: "quyết định", lesson: 17 },
+            { chinese: "选择", pinyin: "xuăn zé", vietnamese: "lựa chọn", lesson: 17 },
+            { chinese: "必须", pinyin: "bì xū", vietnamese: "phải", lesson: 17 },
+            { chinese: "根据", pinyin: "gēn jù", vietnamese: "căn cứ trên", lesson: 17 },
+            { chinese: "渴", pinyin: "kě", vietnamese: "khát (nước)", lesson: 17 },
+            { chinese: "利于", pinyin: "lì yú", vietnamese: "lợi ích", lesson: 17 },
+
+            { chinese: "向", pinyin: "xiàng", vietnamese: "hướng về, theo hướng, về phía", lesson: 18 },
+            { chinese: "万", pinyin: "wàn", vietnamese: "vạn", lesson: 18 },
+            { chinese: "只", pinyin: "zhī", vietnamese: "lượng từchỉ con vật", lesson: 18 },
+            { chinese: "嘴", pinyin: "zui", vietnamese: "cái miệng", lesson: 18 },
+            { chinese: "动物", pinyin: "dòng wù", vietnamese: "động vật", lesson: 18 },
+            { chinese: "段", pinyin: "duàn", vietnamese: "đoạn (dùng trong các từ như giai đoạn)", lesson: 18 },
+            { chinese: "有名", pinyin: "you ming", vietnamese: "nổi tiếng", lesson: 18 },
+            { chinese: "同意", pinyin: "tóng yī", vietnamese: "đồng ý", lesson: 18 },
+            { chinese: "相信", pinyin: "xiāng xìn", vietnamese: "tin tưởng", lesson: 18 },
+            { chinese: "关于", pinyin: "guān yú", vietnamese: "liên quan, về cái gì đó", lesson: 18 },
+            { chinese: "机会", pinyin: "ji hui", vietnamese: "cơ hội", lesson: 18 },
+            { chinese: "国家", pinyin: "guó jiā", vietnamese: "quốc gia", lesson: 18 },
+            { chinese: "种", pinyin: "zhong", vietnamese: "loại", lesson: 18 },
+            { chinese: "特点", pinyin: "tè diăn", vietnamese: "đặc điểm", lesson: 18 },
+            { chinese: "奇怪", pinyin: "qí guài", vietnamese: "kỳ lạ", lesson: 18 },
+
+            { chinese: "耳朵", pinyin: "ěr duo", vietnamese: "cái tai", lesson: 19 },
+            { chinese: "脸", pinyin: "liăn", vietnamese: "khuôn mặt", lesson: 19 },
+            { chinese: "短", pinyin: "duăn", vietnamese: "ngắn", lesson: 19 },
+            { chinese: "马", pinyin: "mă", vietnamese: "con ngựa", lesson: 19 },
+            { chinese: "位", pinyin: "wèi", vietnamese: "vị", lesson: 19 },
+            { chinese: "蓝", pinyin: "lán", vietnamese: "màu xanh nước biển", lesson: 19 },
+            { chinese: "鸟", pinyin: "nião", vietnamese: "con chim", lesson: 19 },
+            { chinese: "哭", pinyin: "kū", vietnamese: "khóc", lesson: 19 },
+            { chinese: "船", pinyin: "chuán", vietnamese: "cái thuyền", lesson: 19 },
+            { chinese: "经过", pinyin: "jīng guò", vietnamese: "trải qua", lesson: 19 }
+        ];
+
+        let currentVocabList = [...rawVocabData];
+        let currentIndex = 0;
+        let isFlipped = false;
+
+        const flashcardEl = document.getElementById('flashcard');
+        const cardFrontText = document.getElementById('cardFrontText');
+        const cardPinyinText = document.getElementById('cardPinyinText');
+        const cardBackText = document.getElementById('cardBackText');
+        const cardLessonInfo = document.getElementById('cardLessonInfo');
+        
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const currentIndexDisplay = document.getElementById('currentIndexDisplay');
+        const totalCardsDisplay = document.getElementById('totalCardsDisplay');
+        const progressBar = document.getElementById('progressBar');
+        const lessonSelect = document.getElementById('lessonSelect');
+
+        function updateCard() {
+            if (currentVocabList.length === 0) return;
+            
+            const currentWord = currentVocabList[currentIndex];
+            
+            // If card is currently flipped, unflip it first before changing content
+            if (isFlipped) {
+                flashcardEl.classList.remove('rotate-y-180');
+                isFlipped = false;
+                
+                // Wait for flip animation to finish before updating text to avoid visual glitch
+                setTimeout(() => {
+                    setCardContent(currentWord);
+                }, 300); // Half of the transition time
+            } else {
+                setCardContent(currentWord);
+            }
+
+            updateUI();
+        }
+
+        function setCardContent(word) {
+            cardFrontText.textContent = word.chinese;
+            cardPinyinText.textContent = word.pinyin || '';
+            cardBackText.textContent = word.vietnamese;
+            cardLessonInfo.textContent = `Bài ${word.lesson}`;
+        }
+
+        function updateUI() {
+            currentIndexDisplay.textContent = currentVocabList.length > 0 ? currentIndex + 1 : 0;
+            totalCardsDisplay.textContent = currentVocabList.length;
+            
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex === currentVocabList.length - 1;
+
+            const progressPercentage = currentVocabList.length > 0 
+                ? ((currentIndex + 1) / currentVocabList.length) * 100 
+                : 0;
+            progressBar.style.width = `${progressPercentage}%`;
+        }
+
+        function filterByLesson(lessonNum) {
+            if (lessonNum === 'all') {
+                currentVocabList = [...rawVocabData];
+            } else {
+                currentVocabList = rawVocabData.filter(word => word.lesson === parseInt(lessonNum));
+            }
+            currentIndex = 0;
+            if(isFlipped) {
+                flashcardEl.classList.remove('rotate-y-180');
+                isFlipped = false;
+                setTimeout(updateCard, 300);
+            } else {
+                updateCard();
+            }
+        }
+
+        flashcardEl.addEventListener('click', () => {
+            if (currentVocabList.length === 0) return;
+            isFlipped = !isFlipped;
+            if (isFlipped) {
+                flashcardEl.classList.add('rotate-y-180');
+            } else {
+                flashcardEl.classList.remove('rotate-y-180');
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateCard();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentIndex < currentVocabList.length - 1) {
+                currentIndex++;
+                updateCard();
+            }
+        });
+
+        lessonSelect.addEventListener('change', (e) => {
+            filterByLesson(e.target.value);
+        });
+
+        // Keyboard navigation support
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                if (currentIndex < currentVocabList.length - 1) {
+                    currentIndex++;
+                    updateCard();
+                }
+            } else if (e.key === 'ArrowLeft') {
+                 if (currentIndex > 0) {
+                    currentIndex--;
+                    updateCard();
+                }
+            } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                // Flip card
+                if (currentVocabList.length === 0) return;
+                isFlipped = !isFlipped;
+                if (isFlipped) {
+                    flashcardEl.classList.add('rotate-y-180');
+                } else {
+                    flashcardEl.classList.remove('rotate-y-180');
+                }
+            }
+        });
+
+        // Initialize the first card
+        updateCard();
+
+    </script>
+</body>
+</html>
