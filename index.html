@@ -25,35 +25,21 @@
 </head>
 <body class="bg-gray-50 min-h-screen font-sans text-gray-800 flex flex-col items-center justify-center p-4">
 
-    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col h-[600px]">
+    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col h-[600px] relative">
         
         <!-- Header -->
-        <div class="bg-red-600 text-white p-4 text-center relative">
-            <h1 class="text-2xl font-bold">Từ Vựng HSK 3 (Bài 1 - 19)</h1>
-            <p class="text-sm opacity-80 mt-1">Nguồn: HOCBÁ</p>
-            <div class="absolute top-4 right-4">
-                 <select id="lessonSelect" class="bg-red-700 text-white border border-red-500 rounded p-1 text-sm outline-none">
-                    <option value="all">Tất cả bài</option>
-                    <option value="1">Bài 1</option>
-                    <option value="2">Bài 2</option>
-                    <option value="3">Bài 3</option>
-                    <option value="4">Bài 4</option>
-                    <option value="5">Bài 5</option>
-                    <option value="6">Bài 6</option>
-                    <option value="7">Bài 7</option>
-                    <option value="8">Bài 8</option>
-                    <option value="9">Bài 9</option>
-                    <option value="10">Bài 10</option>
-                    <option value="11">Bài 11</option>
-                    <option value="12">Bài 12</option>
-                    <option value="13">Bài 13</option>
-                    <option value="14">Bài 14</option>
-                    <option value="15">Bài 15</option>
-                    <option value="16">Bài 16</option>
-                    <option value="17">Bài 17</option>
-                    <option value="18">Bài 18</option>
-                    <option value="19">Bài 19</option>
-                </select>
+        <div class="bg-red-600 text-white p-4 relative flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="text-center sm:text-left">
+                <h1 class="text-xl sm:text-2xl font-bold">Từ Vựng HSK 3 (Bài 1 - 19)</h1>
+                <p id="selectedLessonsSummary" class="text-xs sm:text-sm opacity-90 mt-0.5">Đã chọn: Tất cả bài (19 bài)</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <button id="shuffleBtn" class="bg-red-700 hover:bg-red-800 text-white px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-colors flex items-center gap-1 shadow-inner" title="Trộn thứ tự từ vựng">
+                    🔀 Trộn
+                </button>
+                <button id="openFilterBtn" class="bg-white text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1.5 shadow-md">
+                    📚 Chọn bài học <span id="selectedCountBadge" class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded-full">19</span>
+                </button>
             </div>
         </div>
 
@@ -97,6 +83,38 @@
             <button id="nextBtn" class="px-6 py-2.5 rounded-full bg-red-600 text-white font-semibold shadow-md hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                 Tiếp &rarr;
             </button>
+        </div>
+    </div>
+
+    <!-- Lesson Selection Modal -->
+    <div id="lessonModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl flex flex-col max-h-[85vh]">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h2 class="text-lg font-bold text-gray-800">Chọn bài học (Có thể chọn nhiều bài)</h2>
+                <button id="closeModalBtn" class="text-gray-400 hover:text-gray-600 text-2xl font-bold px-2">&times;</button>
+            </div>
+
+            <!-- Quick presets -->
+            <div class="flex flex-wrap gap-2 mb-4 text-xs">
+                <button id="selectAllBtn" class="px-2.5 py-1 bg-red-100 text-red-700 rounded-md font-medium hover:bg-red-200">Tất cả</button>
+                <button id="deselectAllBtn" class="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-md font-medium hover:bg-gray-200">Bỏ chọn</button>
+                <button id="preset1_5" class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200">Bài 1-5</button>
+                <button id="preset6_10" class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200">Bài 6-10</button>
+                <button id="preset11_15" class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200">Bài 11-15</button>
+                <button id="preset16_19" class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200">Bài 16-19</button>
+            </div>
+
+            <!-- Lesson checkboxes grid -->
+            <div id="lessonCheckboxesGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2 overflow-y-auto pr-1 flex-grow max-h-[300px]">
+                <!-- Dynamically generated checkboxes -->
+            </div>
+
+            <div class="mt-5 pt-3 border-t flex justify-between items-center">
+                <span id="modalSelectedCountText" class="text-xs font-medium text-gray-500">Đã chọn 19/19 bài</span>
+                <button id="applyFilterBtn" class="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-semibold shadow-md transition-colors">
+                    Áp dụng & Học ngay
+                </button>
+            </div>
         </div>
     </div>
 
@@ -446,6 +464,7 @@
             { chinese: "经过", pinyin: "jīng guò", vietnamese: "trải qua", lesson: 19 }
         ];
 
+        let selectedLessons = new Set(Array.from({length: 19}, (_, i) => i + 1));
         let currentVocabList = [...rawVocabData];
         let currentIndex = 0;
         let isFlipped = false;
@@ -461,22 +480,161 @@
         const currentIndexDisplay = document.getElementById('currentIndexDisplay');
         const totalCardsDisplay = document.getElementById('totalCardsDisplay');
         const progressBar = document.getElementById('progressBar');
-        const lessonSelect = document.getElementById('lessonSelect');
+
+        const lessonModal = document.getElementById('lessonModal');
+        const openFilterBtn = document.getElementById('openFilterBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const applyFilterBtn = document.getElementById('applyFilterBtn');
+        const lessonCheckboxesGrid = document.getElementById('lessonCheckboxesGrid');
+        const selectedLessonsSummary = document.getElementById('selectedLessonsSummary');
+        const selectedCountBadge = document.getElementById('selectedCountBadge');
+        const modalSelectedCountText = document.getElementById('modalSelectedCountText');
+        const shuffleBtn = document.getElementById('shuffleBtn');
+
+        function initModalCheckboxes() {
+            lessonCheckboxesGrid.innerHTML = '';
+            for (let i = 1; i <= 19; i++) {
+                const count = rawVocabData.filter(w => w.lesson === i).length;
+                const label = document.createElement('label');
+                const isChecked = selectedLessons.has(i);
+                label.className = `flex items-center gap-2 p-2 rounded-lg border text-sm cursor-pointer transition-colors ${isChecked ? 'bg-red-50 border-red-300 text-red-900 font-semibold' : 'border-gray-200 text-gray-700 hover:bg-gray-50'}`;
+                label.innerHTML = `
+                    <input type="checkbox" value="${i}" ${isChecked ? 'checked' : ''} class="lesson-checkbox accent-red-600 w-4 h-4 rounded">
+                    <span>Bài ${i} <span class="text-xs font-normal opacity-70">(${count} từ)</span></span>
+                `;
+                lessonCheckboxesGrid.appendChild(label);
+            }
+            updateModalCount();
+        }
+
+        function updateModalCount() {
+            const checkedBoxes = lessonCheckboxesGrid.querySelectorAll('.lesson-checkbox:checked');
+            modalSelectedCountText.textContent = `Đã chọn ${checkedBoxes.length}/19 bài`;
+        }
+
+        lessonCheckboxesGrid.addEventListener('change', (e) => {
+            if (e.target.classList.contains('lesson-checkbox')) {
+                const parent = e.target.closest('label');
+                if (e.target.checked) {
+                    parent.className = 'flex items-center gap-2 p-2 rounded-lg border text-sm cursor-pointer transition-colors bg-red-50 border-red-300 text-red-900 font-semibold';
+                } else {
+                    parent.className = 'flex items-center gap-2 p-2 rounded-lg border text-sm cursor-pointer transition-colors border-gray-200 text-gray-700 hover:bg-gray-50';
+                }
+                updateModalCount();
+            }
+        });
+
+        // Preset selection buttons
+        document.getElementById('selectAllBtn').addEventListener('click', () => setAllCheckboxes(true));
+        document.getElementById('deselectAllBtn').addEventListener('click', () => setAllCheckboxes(false));
+        document.getElementById('preset1_5').addEventListener('click', () => setRangeCheckboxes(1, 5));
+        document.getElementById('preset6_10').addEventListener('click', () => setRangeCheckboxes(6, 10));
+        document.getElementById('preset11_15').addEventListener('click', () => setRangeCheckboxes(11, 15));
+        document.getElementById('preset16_19').addEventListener('click', () => setRangeCheckboxes(16, 19));
+
+        function setAllCheckboxes(checked) {
+            const boxes = lessonCheckboxesGrid.querySelectorAll('.lesson-checkbox');
+            boxes.forEach(b => {
+                b.checked = checked;
+                const parent = b.closest('label');
+                if (checked) {
+                    parent.className = 'flex items-center gap-2 p-2 rounded-lg border text-sm cursor-pointer transition-colors bg-red-50 border-red-300 text-red-900 font-semibold';
+                } else {
+                    parent.className = 'flex items-center gap-2 p-2 rounded-lg border text-sm cursor-pointer transition-colors border-gray-200 text-gray-700 hover:bg-gray-50';
+                }
+            });
+            updateModalCount();
+        }
+
+        function setRangeCheckboxes(start, end) {
+            const boxes = lessonCheckboxesGrid.querySelectorAll('.lesson-checkbox');
+            boxes.forEach(b => {
+                const val = parseInt(b.value);
+                const checked = val >= start && val <= end;
+                b.checked = checked;
+                const parent = b.closest('label');
+                if (checked) {
+                    parent.className = 'flex items-center gap-2 p-2 rounded-lg border text-sm cursor-pointer transition-colors bg-red-50 border-red-300 text-red-900 font-semibold';
+                } else {
+                    parent.className = 'flex items-center gap-2 p-2 rounded-lg border text-sm cursor-pointer transition-colors border-gray-200 text-gray-700 hover:bg-gray-50';
+                }
+            });
+            updateModalCount();
+        }
+
+        openFilterBtn.addEventListener('click', () => {
+            initModalCheckboxes();
+            lessonModal.classList.remove('hidden');
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            lessonModal.classList.add('hidden');
+        });
+
+        applyFilterBtn.addEventListener('click', () => {
+            const checkedBoxes = Array.from(lessonCheckboxesGrid.querySelectorAll('.lesson-checkbox:checked')).map(cb => parseInt(cb.value));
+            selectedLessons = new Set(checkedBoxes);
+            
+            applyFilter();
+            lessonModal.classList.add('hidden');
+        });
+
+        function applyFilter() {
+            currentVocabList = rawVocabData.filter(word => selectedLessons.has(word.lesson));
+            currentIndex = 0;
+            
+            if (selectedLessons.size === 19) {
+                selectedLessonsSummary.textContent = 'Đã chọn: Tất cả bài (19 bài)';
+            } else if (selectedLessons.size === 0) {
+                selectedLessonsSummary.textContent = 'Chưa chọn bài nào';
+            } else {
+                const arr = Array.from(selectedLessons).sort((a,b) => a - b);
+                selectedLessonsSummary.textContent = `Đã chọn: Bài ${arr.join(', ')}`;
+            }
+            selectedCountBadge.textContent = selectedLessons.size;
+
+            if(isFlipped) {
+                flashcardEl.classList.remove('rotate-y-180');
+                isFlipped = false;
+                setTimeout(updateCard, 300);
+            } else {
+                updateCard();
+            }
+        }
+
+        // Shuffle card functionality
+        shuffleBtn.addEventListener('click', () => {
+            if (currentVocabList.length <= 1) return;
+            for (let i = currentVocabList.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [currentVocabList[i], currentVocabList[j]] = [currentVocabList[j], currentVocabList[i]];
+            }
+            currentIndex = 0;
+            if(isFlipped) {
+                flashcardEl.classList.remove('rotate-y-180');
+                isFlipped = false;
+                setTimeout(updateCard, 300);
+            } else {
+                updateCard();
+            }
+        });
 
         function updateCard() {
-            if (currentVocabList.length === 0) return;
+            if (currentVocabList.length === 0) {
+                setCardContent(null);
+                updateUI();
+                return;
+            }
             
             const currentWord = currentVocabList[currentIndex];
             
-            // If card is currently flipped, unflip it first before changing content
             if (isFlipped) {
                 flashcardEl.classList.remove('rotate-y-180');
                 isFlipped = false;
                 
-                // Wait for flip animation to finish before updating text to avoid visual glitch
                 setTimeout(() => {
                     setCardContent(currentWord);
-                }, 300); // Half of the transition time
+                }, 300);
             } else {
                 setCardContent(currentWord);
             }
@@ -485,6 +643,13 @@
         }
 
         function setCardContent(word) {
+            if (!word) {
+                cardFrontText.textContent = "Chưa chọn bài";
+                cardPinyinText.textContent = "";
+                cardBackText.textContent = "Vui lòng bấm 'Chọn bài học' để chọn ít nhất 1 bài";
+                cardLessonInfo.textContent = "Bài --";
+                return;
+            }
             cardFrontText.textContent = word.chinese;
             cardPinyinText.textContent = word.pinyin || '';
             cardBackText.textContent = word.vietnamese;
@@ -495,29 +660,13 @@
             currentIndexDisplay.textContent = currentVocabList.length > 0 ? currentIndex + 1 : 0;
             totalCardsDisplay.textContent = currentVocabList.length;
             
-            prevBtn.disabled = currentIndex === 0;
-            nextBtn.disabled = currentIndex === currentVocabList.length - 1;
+            prevBtn.disabled = currentIndex === 0 || currentVocabList.length === 0;
+            nextBtn.disabled = currentIndex === currentVocabList.length - 1 || currentVocabList.length === 0;
 
             const progressPercentage = currentVocabList.length > 0 
                 ? ((currentIndex + 1) / currentVocabList.length) * 100 
                 : 0;
             progressBar.style.width = `${progressPercentage}%`;
-        }
-
-        function filterByLesson(lessonNum) {
-            if (lessonNum === 'all') {
-                currentVocabList = [...rawVocabData];
-            } else {
-                currentVocabList = rawVocabData.filter(word => word.lesson === parseInt(lessonNum));
-            }
-            currentIndex = 0;
-            if(isFlipped) {
-                flashcardEl.classList.remove('rotate-y-180');
-                isFlipped = false;
-                setTimeout(updateCard, 300);
-            } else {
-                updateCard();
-            }
         }
 
         flashcardEl.addEventListener('click', () => {
@@ -544,12 +693,9 @@
             }
         });
 
-        lessonSelect.addEventListener('change', (e) => {
-            filterByLesson(e.target.value);
-        });
-
         // Keyboard navigation support
         document.addEventListener('keydown', (e) => {
+            if (lessonModal && !lessonModal.classList.contains('hidden')) return; // Disable hotkeys when modal is open
             if (e.key === 'ArrowRight' || e.key === ' ') {
                 if (currentIndex < currentVocabList.length - 1) {
                     currentIndex++;
@@ -561,7 +707,6 @@
                     updateCard();
                 }
             } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-                // Flip card
                 if (currentVocabList.length === 0) return;
                 isFlipped = !isFlipped;
                 if (isFlipped) {
