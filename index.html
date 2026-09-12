@@ -53,16 +53,16 @@
             
             <div id="flashcard" class="w-full max-w-md h-64 relative transform-style-3d transition-transform cursor-pointer shadow-lg rounded-xl">
                 
-                <!-- Front (Chinese & Pinyin) -->
+                <!-- Front (Chinese Only) -->
                 <div class="absolute w-full h-full bg-white border-2 border-gray-100 rounded-xl flex flex-col items-center justify-center p-6 backface-hidden shadow-[0_4px_14px_0_rgba(0,0,0,0.1)]">
-                    <div id="cardFrontText" class="text-6xl font-bold text-gray-800 mb-4 text-center">字</div>
-                    <div id="cardPinyinText" class="text-xl text-gray-500 text-center">zì</div>
+                    <div id="cardFrontText" class="text-6xl font-bold text-gray-800 text-center">字</div>
                     <div class="absolute bottom-4 text-xs text-gray-400">Chạm để lật</div>
                 </div>
 
-                <!-- Back (Vietnamese) -->
+                <!-- Back (Pinyin & Vietnamese) -->
                 <div class="absolute w-full h-full bg-red-50 text-red-900 border-2 border-red-100 rounded-xl flex flex-col items-center justify-center p-6 backface-hidden rotate-y-180 shadow-[0_4px_14px_0_rgba(0,0,0,0.1)]">
-                    <div id="cardBackText" class="text-3xl font-semibold text-center leading-tight">Nghĩa tiếng Việt</div>
+                    <div id="cardPinyinText" class="text-2xl font-bold text-red-600 text-center mb-2">zì</div>
+                    <div id="cardBackText" class="text-2xl font-semibold text-center leading-tight">Nghĩa tiếng Việt</div>
                     <div id="cardLessonInfo" class="absolute top-4 left-4 text-xs font-semibold bg-red-200 text-red-800 px-2 py-1 rounded-md">Bài X</div>
                 </div>
 
