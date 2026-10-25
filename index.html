@@ -154,6 +154,22 @@
         body[data-hanzi="arial"] .quiz-question h3, body[data-hanzi="arial"] .answer, body[data-hanzi="arial"] .matching-tile, body[data-hanzi="arial"] .write-input { font-family:Arial,"Microsoft YaHei","PingFang SC",sans-serif; }
         .font-switch { display:inline-flex; gap:0; border:1px solid var(--line); border-radius:12px; overflow:hidden; } .font-switch .font-opt { border:0; border-radius:0; padding:10px 13px; background:var(--surface); color:var(--muted); font-weight:800; cursor:pointer; } .font-switch .font-opt + .font-opt { border-left:1px solid var(--line); } .font-switch .font-opt.active { background:var(--blue); color:#fff; }
         .han-viet { margin:-2px 0 10px; color:var(--muted); font-size:18px; font-weight:800; font-style:italic; } .card-note { margin:0 0 14px; padding:12px 14px; border-radius:12px; background:rgba(38,118,216,.08); border:1px solid var(--line); font-size:15px; line-height:1.55; white-space:pre-line; text-align:left; } .card-note strong { color:var(--blue); }
+
+        /* ===== Tối ưu điện thoại (Galaxy S23 Ultra ~412px) ===== */
+        html, body { max-width:100%; overflow-x:hidden; } .app-shell, .topbar, .topbar-actions, .toolbar, .toolbar-actions { min-width:0; max-width:100%; }
+        .lbl-short { display:none; } .topbar-actions { flex-wrap:wrap; } .upload-label { min-width:0; text-align:center; white-space:nowrap; }
+        @media (max-width:620px) {
+            .topbar-actions { display:flex; flex-wrap:wrap; gap:8px; width:100%; align-items:stretch; }
+            .gami-badge { order:1; flex:1 1 0; min-width:0; } #themeToggle { order:2; flex:0 0 auto; } #settingsButton { order:3; flex:0 0 auto; }
+            .auth-actions { order:4; flex:1 1 100%; width:100%; } .auth-actions .button { flex:1; padding:10px 8px; }
+            .upload-label { order:5; flex:1 1 calc(50% - 4px); width:auto; padding:11px 6px; font-size:13px; gap:4px; justify-content:center; border-radius:12px; }
+            .lbl-long { display:none; } .lbl-short { display:inline; }
+            .toolbar, .toolbar-actions { width:100%; } .toolbar-actions { gap:6px; }
+            .toolbar-actions > .button { flex:1 1 calc(50% - 6px); padding:10px 6px; font-size:13px; }
+            .font-switch { flex:1 1 100%; display:flex; } .font-switch .font-opt { flex:1; padding:10px 4px; font-size:13px; }
+            .hanzi-stack .hanzi { font-size:clamp(56px,20vw,84px); } .hanzi-stack .hanzi.second { font-size:clamp(36px,12vw,52px); }
+            .card-stage { height:min(500px, 68vh); min-height:420px; } .card-note, .han-viet { font-size:14px; }
+        }
     </style>
 </head>
 <body>
@@ -171,7 +187,7 @@
             <div class="sidebar-note"><strong>Tiếp tục học</strong><br>Ôn lại 10 từ hôm nay để duy trì nhịp học.</div>
         </aside>
         <main class="app-shell content-shell">
-        <header class="topbar"><div class="brand"><div class="brand-mark">汉</div><div><h1>HanYu Lab</h1><p>Học tiếng Trung theo cách trực quan</p></div></div><div class="topbar-actions"><div class="gami-badge" id="gamiBadge"><span class="gami-level" id="gamiLevel">Lv.1</span><div class="xp-bar"><div class="xp-bar-fill" id="gamiXpFill" style="width:0%"></div></div><span class="gami-streak" id="gamiStreak">🔥0</span></div><div class="auth-actions"><span class="account-name" id="accountName"></span><button class="button secondary" id="authButton" type="button">Đăng nhập</button><button class="button secondary" id="signOutButton" type="button" hidden>Đăng xuất</button></div><button class="theme-toggle" id="themeToggle" type="button" aria-label="Bật chế độ tối" aria-pressed="false">🌙</button><button class="theme-toggle" id="settingsButton" type="button" aria-label="Quản lý tiến độ học">⚙️</button><label class="upload-label" for="excelUpload">📂 Nạp file Excel</label><input id="excelUpload" type="file" accept=".xlsx,.xls"><label class="upload-label" for="vocabUpload" title="File có cột: 汉字 | 汉字2 | Pinyin | Hán Việt | Nghĩa | Note | CAT">📥 Import từ vựng (Hán Việt)</label><input id="vocabUpload" type="file" accept=".xlsx,.xls"></div></header>
+        <header class="topbar"><div class="brand"><div class="brand-mark">汉</div><div><h1>HanYu Lab</h1><p>Học tiếng Trung theo cách trực quan</p></div></div><div class="topbar-actions"><div class="gami-badge" id="gamiBadge"><span class="gami-level" id="gamiLevel">Lv.1</span><div class="xp-bar"><div class="xp-bar-fill" id="gamiXpFill" style="width:0%"></div></div><span class="gami-streak" id="gamiStreak">🔥0</span></div><div class="auth-actions"><span class="account-name" id="accountName"></span><button class="button secondary" id="authButton" type="button">Đăng nhập</button><button class="button secondary" id="signOutButton" type="button" hidden>Đăng xuất</button></div><button class="theme-toggle" id="themeToggle" type="button" aria-label="Bật chế độ tối" aria-pressed="false">🌙</button><button class="theme-toggle" id="settingsButton" type="button" aria-label="Quản lý tiến độ học">⚙️</button><label class="upload-label" for="excelUpload"><span class="lbl-long">📂 Nạp file Excel</span><span class="lbl-short">📂 Nạp Excel</span></label><input id="excelUpload" type="file" accept=".xlsx,.xls"><label class="upload-label" for="vocabUpload" title="File có cột: 汉字 | 汉字2 | Pinyin | Hán Việt | Nghĩa | Note | CAT"><span class="lbl-long">📥 Import từ vựng (Hán Việt)</span><span class="lbl-short">📥 Import từ vựng</span></label><input id="vocabUpload" type="file" accept=".xlsx,.xls"></div></header>
         <div class="toast-stack" id="toastStack"></div>
         <nav class="nav" aria-label="Điều hướng chính"><button data-view="flashcardsView">📖 Học từ vựng</button><button data-view="quizView">🧠 Luyện trắc nghiệm</button><button class="active" data-view="dashboardView">📊 Dashboard</button></nav>
         <div class="status" id="dbStatus" role="status">⏳ Đang kiểm tra dữ liệu...</div>
